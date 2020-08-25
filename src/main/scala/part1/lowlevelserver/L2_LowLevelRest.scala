@@ -136,13 +136,13 @@ object L2_LowLevelRest extends App with GuitarStoreJsonProtocol {
         guitarCreatedFuture.map(_ => HttpResponse(StatusCodes.OK))
       })
 
-    case HttpRequest(HttpMethods.GET, uri@Uri.Path("/api/guitar/inventory"), _, entity, _) =>
+    case HttpRequest(HttpMethods.GET, uri@Uri.Path("/api/guitar/inventory"), _, d, _) =>
       val inStock = uri.query().get("inStock").map(_.toBoolean).getOrElse(true)
       val guitarsFuture = (lowLevelGuitarDB ? FindAllGuitar).mapTo[List[Guitar]]
       guitarsFuture.map(list => list.filter(guitar=> (guitar.quantity!=0) == inStock)).map { guitars =>
         HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, guitars.toJson.prettyPrint))
       }
-    case HttpRequest(HttpMethods.POST, uri@Uri.Path("/api/guitar/inventory"), _, entity, _) =>
+    case HttpRequest(HttpMethods.POST, uri@Uri.Path("/api/guitar/inventory"), _, enteity, _) =>
       println("Received request to add to inventory")
       val idOpt = uri.query().get("id").map(_.toInt)
       val quantityOpt = uri.query().get("quantity").map(_.toInt)
