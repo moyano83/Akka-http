@@ -1,7 +1,7 @@
 package part2.highlevelserver
 
 import akka.actor.ActorSystem
-import akka.http.javadsl.server.{MethodRejection, MissingQueryParamRejection}
+import akka.http.scaladsl.server.{MethodRejection, MissingQueryParamRejection}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
@@ -57,7 +57,8 @@ object L6_HandlingRejections extends App {
   // a new implicit rejection handler:
   implicit val customDefaultRejectionHandler = RejectionHandler.newBuilder().handle { // Takes a PF between Rejection and Route
     case m: MethodRejection => complete(StatusCodes.ImATeapot)
-  }.handleAll[MissingQueryParamRejection]{ r => //  Handles all MissingQueryParamRejection rejection types
+  }.handleAll[MissingQueryParamRejection]{ r =>
+    //  Handles all MissingQueryParamRejection rejection types
     // Adding multiple handlers here sets a priority on the rejection directives. Multiple handlers with a single
     // case on each is different from multiple cases with a single handle
     complete(StatusCodes.InternalServerError)
